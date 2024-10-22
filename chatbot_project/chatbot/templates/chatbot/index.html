@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 60px;
+  aspect-ratio: 2;
+  --_g: no-repeat radial-gradient(farthest-side, #6b8afd 90%, #6b8afd);
+  background: 
+    var(--_g) 0    50%,
+    var(--_g) 50%  50%,
+    var(--_g) 50%  50%,
+    var(--_g) 100% 50%;
+  background-size: 25% 50%;
+  animation: l12 1s infinite linear;
+}
+
+@keyframes l12 {
+    33%  {background-position:0   0  ,50% 100%,50%  100%,100% 0}
+    66%  {background-position:50% 0  ,0   100%,100% 100%,50%  0}
+    100% {background-position:50% 50%,0   50% ,100% 50% ,50%  50%}
+}
+
+
+.header {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #b3c6ff, #d6e0ff);
+  background-size: 200% 200%;
+  animation: gradientAnimation 10s ease infinite;
+  color: black; /* Keep text visible */
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+
+.hidden {
+  display: none;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f9f9f9;
+  
+}
+
+/* Navbar styles */
+.navbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #6b8afd;
+  padding: 1rem 2rem;
+  z-index: 1000;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;  transition: all 0.3s ease;
+}
+
+.navbar .brand {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.navbar .menu {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .menu-item {
+  margin-left: 2rem;
+}
+
+.navbar .menu-item a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar .menu-item a:hover {
+  color: #dde8ff;
+}
+
+/* Hamburger Menu */
+.nav-toggle {
+  display: none;
+}
+
+.nav-toggle span {
+  width: 25px;
+  height: 2px;
+  background-color: #fff;
+  margin-bottom: 5px;
+  transition: 0.3s ease-in-out;
+}
+
+#nav:checked + .nav-toggle span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+#nav:checked + .nav-toggle span:nth-child(2) {
+  opacity: 0;
+}
+
+#nav:checked + .nav-toggle span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Responsive Navbar */
+@media (max-width: 768px) {
+  .navbar .wrapper {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100vh;
+    width: 100%;
+    background-color: #6b8afd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s ease;
+  }
+
+  #nav:checked ~ .wrapper {
+    left: 0;
+  }
+
+  .navbar .menu {
+    flex-direction: column;
+  }
+
+  .navbar .menu-item {
+    margin: 1.5rem 0;
+  }
+
+  .nav-toggle {
+    display: block;
+    cursor: pointer;
+  }
+}
+
+/* Animation for sticky effect */
+.sticky {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.chat-container {
+    width: 65%;
+    max-width: 900px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Adjusted shadow for depth */
+    background-color: #ffffff;
+    margin: auto;
+    margin-top: 30px !important;
+    border: 1px solid #6b8afd;
+    transform: translateZ(0); /* Trigger hardware acceleration */
+    perspective: 1000px; /* Add perspective for 3D effect */
+    transition: transform 0.3s; /* Smooth transition */
+}
+
+/* Adding hover effect for more interaction */
+.chat-container:hover {
+    transform: translateY(-5px) scale(1.02); /* Slight lift and scale on hover */
+}
+
+/* Chat Header Marquee */
+.chat-header {
+    padding: 15px;
+    background-color: #6b8afd;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+    color: #fff;
+}
+
+marquee {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+/* Chat Box Styling */
+.chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 12px;
+    max-width: 75%;
+    font-size: 16px;
+    word-wrap: break-word;
+    line-height: 1.5;
+}
+
+.user-message {
+    background-color: #e2ffc7;
+    align-self: flex-end;
+    animation: fadeInRight 0.5s ease;
+}
+
+.bot-message {
+    background-color: #e2e3ff;
+    align-self: flex-start;
+    animation: fadeInLeft 0.5s ease;
+}
+
+/* Input Container */
+.input-container {
+    display: flex;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 15px;
+    font-size: 18px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    background-color: #f9f9f9;
+}
+
+.chat-input:focus {
+    border-color: #6b8afd;
+}
+
+/* Send Button Styling */
+.send-btn {
+    padding: 10px 15px;
+    background-color: #6b8afd;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.send-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.send-btn:hover {
+    background-color: #5a76df;
+}
+
+/* Scrollbar Styling */
+#chat-box {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.chat-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background-color: #b0b0b0;
+    border-radius: 3px;
+}
+
+/* Animations */
+@keyframes fadeInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+        /* Footer */
+        .footer {
+            background-color: #6b8afd;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+
+    </style>
+</head>
+<body>
+   
+
+    <header class="header">
+      <nav class="navbar">
+        <a class="brand" href="{% url 'index' %}">Christ University</a>
+        <input type="checkbox" id="nav" class="hidden">
+        <label for="nav" class="nav-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </label>
+        <div class="wrapper">
+          <ul class="menu">
+            <li class="menu-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="menu-item"><a href="{% url 'about' %}">About Us</a></li>
+            <li class="menu-item"><a href="https://lavasa.christuniversity.in/" target="_blank">ChristUniversity official</a></li>
+            <li class="menu-item"><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </nav>
+     
+
+
+  
+      <div class="chat-container">
+        <div class="chat-header">
+            <marquee behavior="scroll" direction="left">Christ University Help Desk</marquee>
+        </div>
+    
+        <div id="chat-box" class="chat-box"></div>
+    
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message..." class="chat-input">
+            <button id="send-btn" class="send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M2.01 21L23 12 2.01 3v7l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+
+</header>
+<!-- Footer -->
+<!-- <div class="footer">
+  <p>&copy; 2024 Christ University Help Desk. All rights reserved.</p>
+</div> -->
+    <script>
+       document.getElementById('send-btn').addEventListener('click', sendMessage);
+
+// Listen for the 'Enter' key in the input field
+document.getElementById('user-input').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();  // Prevent default form submission behavior
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    const userInput = document.getElementById('user-input').value;
+
+    if (userInput.trim() === "") {
+        return;
+    }
+
+    // Display user's message
+    displayMessage(userInput, 'user-message');
+
+    // Show typing indicator
+    showTypingIndicator();
+
+    // Fetch CSRF token
+    function getCSRFToken() {
+        let cookieValue = null;
+        const name = 'csrftoken';
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCSRFToken();  // Get CSRF token
+
+    // Send message to the bot
+    fetch('/get-response/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken  // Add CSRF token to request header
+        },
+        body: JSON.stringify({ message: userInput }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hide typing indicator
+        hideTypingIndicator();
+
+        // Display bot's response
+        displayMessage(data.response, 'bot-message');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+    // Clear the input field
+    document.getElementById('user-input').value = "";
+}
+
+function displayMessage(message, className) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', className);
+    messageDiv.textContent = message;
+    document.getElementById('chat-box').appendChild(messageDiv);
+
+    // Scroll to the bottom
+    document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+}
+
+function showTypingIndicator() {
+    const typingIndicator = document.createElement('div');
+    typingIndicator.id = 'typing-indicator';
+    typingIndicator.classList.add('loader');  // Add the 'loader' class directly
+    document.getElementById('chat-box').appendChild(typingIndicator);
+    typingIndicator.style.display = 'block';
+}
+
+
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typing-indicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+    </script>
+</body>
+</html>
